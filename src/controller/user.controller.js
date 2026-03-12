@@ -160,7 +160,56 @@ const updateUserProfile = async (req, res) => {
 
 }
 
+const updateUserPassword = async (req, res) => {
+
+    const { currentPassword, password } = req.body;
+
+    if (!currentPassword || !password) {
+        return res.json({
+            success: false,
+            message: "Current password and new password required"
+        })
+    }
+
+    try {
+
+        const user = await userModel.findById(req.user.id).select("password");
+
+        if (!user) {
+            return res.json({
+                success: false,
+                message: "User not found"
+            })
+        }
+
+        const match = await bcrypt.compare(currentPassword, user.password);
+
+        if (!match) {
+            return res.json({
+                success: false,
+                message: "Current password is incorrect"
+            })
+        }
+
+        user.password = await bcrypt.hash(password, 10);
+
+        await user.save();
+
+        return res.json({
+            success: true,
+            message: "Password changed successfully"
+        })
+
+    } catch (e) {
+
+        return res.json({
+            success: false,
+            message: e.message
+        })
+
+    }
+
+}
 
 
-
-module.exports = { register, login, getCurrentUserDetails, updateUserProfile }
+module.exports = { register, login, getCurrentUserDetails, updateUserProfile, updateUserPassword }

@@ -8,5 +8,6 @@ router.post("/login", userController.login );
 
 router.get("/user-details", authUser, userController.getCurrentUserDetails );
 router.put("/update-profile", authUser, userController.updateUserProfile );
+router.put("/update-password", authUser, userController.updateUserPassword );
 
 module.exports = router;
